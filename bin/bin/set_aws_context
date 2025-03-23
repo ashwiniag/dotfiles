@@ -1,0 +1,78 @@
+#!/bin/bash
+# Simple script to set up kubectl contexts for all EKS clusters across all AWS regions
+
+# Check if profile was provided
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <aws_profile_name>"
+    exit 1
+fi
+
+PROFILE=$1
+TEMP_KUBECONFIG="/tmp/kubeconfig-$PROFILE-$(date +%s)"
+export KUBECONFIG=$TEMP_KUBECONFIG
+
+echo "Discovering AWS regions..."
+# Use us-east-1 as a default region just for listing all regions
+REGIONS=$(aws ec2 describe-regions --query "Regions[].RegionName" --output text --profile "$PROFILE" --region us-east-1 | tr "\t" "\n")
+
+echo "Setting up kubectl contexts for all EKS clusters using profile: $PROFILE"
+echo "This may take a few minutes depending on the number of regions and clusters..."
+
+# Track clusters for reporting
+TOTAL_CLUSTERS=0
+
+for region in $REGIONS; do
+    echo "Checking region: $region"
+
+    # List clusters in current region
+    CLUSTERS=$(aws eks list-clusters --region "$region" --profile "$PROFILE" --output text --query "clusters[]" 2>/dev/null)
+
+    # Skip if no clusters or if aws command failed
+    if [ $? -ne 0 ] || [ -z "$CLUSTERS" ]; then
+        echo "  No EKS clusters found in $region"
+        continue
+    fi
+
+    # Process each cluster in region
+    for cluster in $CLUSTERS; do
+        echo "  Adding context for cluster: $cluster"
+        aws eks update-kubeconfig --region "$region" --name "$cluster" --profile "$PROFILE" --kubeconfig "$KUBECONFIG" > /dev/null
+
+        # Rename context to more user-friendly name
+        CURRENT_CONTEXT=$(kubectl config current-context --kubeconfig "$KUBECONFIG")
+        kubectl config rename-context "$CURRENT_CONTEXT" "aws-$region-$cluster" --kubeconfig "$KUBECONFIG" > /dev/null
+
+        TOTAL_CLUSTERS=$((TOTAL_CLUSTERS + 1))
+    done
+done
+
+# Copy to user's kubeconfig
+if [ $TOTAL_CLUSTERS -gt 0 ]; then
+    # Ensure ~/.kube directory exists
+    mkdir -p ~/.kube
+
+    # Backup existing config if it exists
+    if [ -f ~/.kube/config ]; then
+        cp ~/.kube/config ~/.kube/config.bak.$(date +%s)
+        echo "Backed up existing kubeconfig to ~/.kube/config.bak.*"
+    fi
+
+    # Merge with existing config if it exists, otherwise just copy
+    if [ -f ~/.kube/config ]; then
+        KUBECONFIG=~/.kube/config:$TEMP_KUBECONFIG kubectl config view --flatten > ~/.kube/config.new
+        mv ~/.kube/config.new ~/.kube/config
+    else
+        cp $TEMP_KUBECONFIG ~/.kube/config
+    fi
+
+    chmod 600 ~/.kube/config
+
+    echo "Configuration complete! Added $TOTAL_CLUSTERS clusters to your kubeconfig."
+    echo "To see available contexts, run: kubectl config get-contexts"
+    echo "To use a specific cluster, run: kubectl config use-context $PROFILE-REGION-CLUSTER_NAME"
+else
+    echo "No EKS clusters found in any region for profile $PROFILE."
+fi
+
+# Clean up temporary file
+rm -f $TEMP_KUBECONFIG

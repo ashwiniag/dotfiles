@@ -82,15 +82,29 @@ install_plugin zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-h
 install_plugin zsh-completions https://github.com/zsh-users/zsh-completions
 install_theme powerlevel10k https://github.com/romkatv/powerlevel10k.git
 
+echo "🔧 Configuring custom bin..."
+chmod +x ./bin/bin/set_*
+mkdir -p ~/bin
+export PATH="$HOME/bin:$PATH"
+
+
 if command -v stow &> /dev/null; then
   echo "📁 Using stow to manage dotfiles..."
+
   echo "🔧 Setting up Git configs..."
   stow git
+
   if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
     echo "⚠️  Removing existing ~/.zshrc to avoid stow conflict..."
     mv ~/.zshrc ~/.zshrc.backup.$(date +%s)
   fi
+
+  echo "🔗 Setting up Zsh config..."
   stow zsh
+
+  echo "🔗 Setting up custom scripts..."
+  stow --target="$HOME" bin
+
 else
   echo "⚠️  stow not found. Install it via Homebrew if you want to manage symlinks."
 fi

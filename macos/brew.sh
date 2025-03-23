@@ -56,5 +56,6 @@ install_cask_if_missing docker
 
 # Install GUI apps
 install_cask_if_missing iterm2
+install_cask_if_missing figtree
 
 echo "🎉 Done installing brew packages!"
