@@ -38,16 +38,70 @@ else
 fi
 
 # Symlink Git config
-echo "🔧 Setting up Git configs..."
-ln -sf ~/dotfiles/git/.gitconfig ~/.gitconfig
-ln -sf ~/dotfiles/git/.gitignore_global ~/.gitignore_global
+#echo "🔧 Setting up Git configs..."
+#ln -sf ~/dotfiles/git/.gitconfig ~/.gitconfig
+#ln -sf ~/dotfiles/git/.gitignore_global ~/.gitignore_global
 
 
-#if command -v stow &> /dev/null; then
-#  echo "📁 Using stow to manage dotfiles..."
-#  stow git
-#else
-#  echo "⚠️  stow not found. Install it via Homebrew if you want to manage symlinks."
-#fi
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+ echo "🌀 Installing Oh My Zsh + Plugins..."
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+else
+  echo "✅ Oh My Zsh already installed."
+fi
 
-echo "Done! ✨ Restart your terminal."
+# Clone Plugins (if not already)
+ZSH_CUSTOM=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}
+
+install_plugin() {
+  local name=$1
+  local url=$2
+  local dest="$ZSH_CUSTOM/plugins/$name"
+  if [ ! -d "$dest" ]; then
+    echo "📥 Installing plugin: $name"
+    git clone "$url" "$dest"
+  else
+    echo "✅ Plugin $name already installed."
+  fi
+}
+
+install_theme() {
+  local name=$1
+  local url=$2
+  local dest="$ZSH_CUSTOM/themes/$name"
+  if [ ! -d "$dest" ]; then
+    echo "🎨 Installing theme: $name"
+    git clone --depth=1 "$url" "$dest"
+  else
+    echo "✅ Theme $name already installed."
+  fi
+}
+
+install_plugin zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions
+install_plugin zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting
+install_plugin zsh-completions https://github.com/zsh-users/zsh-completions
+install_theme powerlevel10k https://github.com/romkatv/powerlevel10k.git
+
+if command -v stow &> /dev/null; then
+  echo "📁 Using stow to manage dotfiles..."
+  echo "🔧 Setting up Git configs..."
+  stow git
+  if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
+    echo "⚠️  Removing existing ~/.zshrc to avoid stow conflict..."
+    mv ~/.zshrc ~/.zshrc.backup.$(date +%s)
+  fi
+  stow zsh
+else
+  echo "⚠️  stow not found. Install it via Homebrew if you want to manage symlinks."
+fi
+
+echo "✅ Done! Restart the terminal or run the following to apply changes:"
+echo ""
+echo "  source ~/.zshrc"
+echo "  exec zsh"
+echo ""
+
+echo "Once you restart terminal run the following to apply changes:"
+echo ""
+echo "  p10k configure"
+echo ""
