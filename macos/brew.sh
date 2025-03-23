@@ -50,12 +50,11 @@ install_if_missing terraform
 install_if_missing helm
 install_if_missing coreutils     # GNU utilities (gutils)
 install_if_missing postgresql@15 # for `psql` CLI
-install_cask_if_missing docker
-
-
+install_if_missing aquasecurity/trivy/trivy
 
 # Install GUI apps
 install_cask_if_missing iterm2
 install_cask_if_missing figtree
+install_cask_if_missing docker
 
 echo "🎉 Done installing brew packages!"
