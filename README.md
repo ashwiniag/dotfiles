@@ -1,0 +1,2 @@
+# dotfiles
+automate the setup
