@@ -34,8 +34,6 @@ install_if_missing stow
 install_if_missing zsh
 install_if_missing tmux         # terminal multiplexer (window + session mgmt)
 install_if_missing neovim
-install_if_missing curl
-install_if_missing wget
 install_if_missing htop
 install_if_missing jq           # JSON parsing
 install_if_missing ripgrep      # fast search (rg)
@@ -44,13 +42,33 @@ install_if_missing bat          # beautiful cat with syntax highlighting
 install_if_missing fd           # better find
 install_if_missing lazygit      # terminal Git UI
 install_if_missing starship     # cross-shell prompt (alt to Powerlevel10k)
-install_if_missing awscli
 install_if_missing go
 install_if_missing terraform
-install_if_missing helm
 install_if_missing coreutils     # GNU utilities (gutils)
 install_if_missing postgresql@15 # for `psql` CLI
 install_if_missing aquasecurity/trivy/trivy
+install_if_missing tflint
+install_if_missing terraform-docs
+
+# Networking tools
+install_if_missing mtr
+install_if_missing nmap
+install_if_missing telnet
+install_if_missing ipcalc
+install_if_missing httpie
+install_if_missing whois
+install_if_missing curl
+install_if_missing wget
+
+# Cloud CLIs
+install_if_missing awscli
+
+# Kubernetes tooling
+install_if_missing kubectl
+install_if_missing helm
+install_if_missing kubectx
+install_if_missing kubens
+install_if_missing k9s
 
 # Install GUI apps
 install_cask_if_missing iterm2
