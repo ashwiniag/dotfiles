@@ -1,0 +1,25 @@
+[user]
+  name = ashwiniag
+  email = ashwinigaddagiwork@gmail.com
+
+[core]
+  editor = idea --wait
+  excludesfile = ~/.gitignore_global
+
+[credential]
+  helper = store
+
+# Colorize CLI output
+[color]
+  ui = auto
+
+# Use rebase instead of merge on pull (cleaner history)
+[pull]
+  rebase = true
+
+# Show nicer log format
+[alias]
+  lg = log --oneline --graph --all --decorate
+  s = status -sb
+  co = checkout
+  ci = commit
