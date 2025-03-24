@@ -7,7 +7,7 @@ Automates minimal, modular, setup for macOS with:
 - Custom scripts (`set_aws_context`, `set_gcp_context`)
 - Dotfile symlinking via GNU Stow
 - Shell enhancements (Oh My Zsh, plugins, powerlevel10k)
-- Custom configuration (auto detection of AWS profiles, aliases etc)
+- Custom configuration (auto detection of AWS profiles, git configurations, aliases etc)
 
 ---
 
