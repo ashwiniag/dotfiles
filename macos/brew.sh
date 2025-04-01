@@ -75,6 +75,6 @@ install_if_missing k9s
 install_cask_if_missing iterm2
 install_cask_if_missing figtree
 install_cask_if_missing docker
-install_cask_if_missing flux
+install_cask_if_missing flux  # f.lux (for screen temperature control)
 
 echo "🎉 Done installing brew packages!"
