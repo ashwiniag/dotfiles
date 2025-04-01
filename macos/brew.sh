@@ -49,6 +49,7 @@ install_if_missing postgresql@15 # for `psql` CLI
 install_if_missing aquasecurity/trivy/trivy
 install_if_missing tflint
 install_if_missing terraform-docs
+install_if_missing flux
 
 # Networking tools
 install_if_missing mtr
@@ -67,12 +68,13 @@ install_if_missing awscli
 install_if_missing kubectl
 install_if_missing helm
 install_if_missing kubectx
-install_if_missing kubens
+install_if_missing kubedns
 install_if_missing k9s
 
 # Install GUI apps
 install_cask_if_missing iterm2
 install_cask_if_missing figtree
 install_cask_if_missing docker
+install_cask_if_missing flux
 
 echo "🎉 Done installing brew packages!"
